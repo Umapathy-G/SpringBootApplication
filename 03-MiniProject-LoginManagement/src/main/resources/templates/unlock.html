@@ -1,0 +1,251 @@
+<html xmlns:th="https://www.thymeleaf.org">
+
+<head>
+	<title>Unlock Account</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+	<!-- Include Font Awesome from the CDN -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<style>
+		body {
+			font-family: 'Dancing Script', cursive;
+			background-color: rgb(192, 192, 192);
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container p-2 mt-4">
+		<form th:action="@{/unlockUser}" th:object="${userData}" method="POST">
+			<div class="row p-2">
+				<div class="col-6 offset-3 p-3 ">
+					<div class="container mt-5 bg-light border border-5 border-dark">
+						<div class="row p-1 bg-secondary">
+							<div class="col-6" th:if="${IsLocked=='Y'}">
+								<h4 class="m-2 text-white"><b>Forget Password Form</b></h4>
+							</div>
+							<div class="col-6" th:if="${IsLocked=='N'}">
+								<h4 class="m-2 text-white"><b>Unlocking Success!!!</b></h4>
+							</div>
+							<div class="col-3 offset-3" th:if="${IsLocked=='Y'}">
+								<a href="/" class="btn btn-primary border border-dark border-3"><i
+										class="fas fa-home"></i> Login</a>
+							</div>
+						</div>
+						<div class="container" th:if="${IsLocked=='Y'}">
+							<input type="hidden" name="id" th:field="*{id}">
+							<div class="row mt-5 mb-3">
+								<label for="email" class="form-label col-3"><b>Email :</b></label>
+								<div class="col-5">
+									<input id="email" th:field="*{email}" class="form-control mb-3" disabled>
+								</div>
+							</div>
+
+							<div class="row mb-4">
+								<label for="temppassword" class="form-label col-3"><b>Temorary Password:</b></label>
+								<div class="col-5">
+									<input id="temppassword" th:field="*{tempPassword}" type="password"
+										class="form-control mb-3" minlength="10" required>
+									<input type="checkbox" id="showtp" class="custom-control-input"
+										onclick="myFunction1()" />
+									<label for="showtp" class="custom-control-label">Show Password</label>
+								</div>
+								<div class="col-4">
+									<span id="temppassword-success"><i class="fas fa-check-circle"
+											style="color: green;"></i> Password Match</span>
+									<span id="temppassword-msg" class="text-danger">
+									</span>
+								</div>
+							</div>
+
+							<div class="row mb-4">
+								<label for="newpassword" class="form-label col-3"><b>New Password:</b></label>
+								<div class="col-5">
+									<input id="newpassword" th:field="*{newPassword}" type="password"
+										class="form-control mb-3" minlength="5" required>
+									<input type="checkbox" id="shownp" class="custom-control-input"
+										onclick="myFunction2()" />
+									<label for="shownp" class="custom-control-label">Show Password</label>
+								</div>
+							</div>
+
+							<div class="row">
+								<label for="confirmpassword" class="form-label col-3"><b>Confirm Passwd:</b></label>
+								<div class="col-5">
+									<input id="confirmpassword" th:field="*{confirmPassword}" type="password"
+										class="form-control mb-3" minlength="5" required>
+									<input type="checkbox" id="showcp" class="custom-control-input"
+										onclick="myFunction3()" />
+									<label for="showcp" class="form-label">Show Password</label>
+								</div>
+								<div class="col-4">
+									<span id="confirmpassword-success"><i class="fas fa-check-circle"
+											style="color: green;"></i> Password Match</span>
+									<span id="confirmpassword-msg" class="text-danger">
+									</span>
+								</div>
+							</div>
+
+
+							<div class="row">
+								<div class="col-6 offset-3 mt-3">
+									<p th:text="${msg}" class="text-success ms-3"></p>
+								</div>
+							</div>
+
+							<div class="row mb-2 bg-light">
+								<div class="col-4 offset-3">
+									<input type="submit" value="Submit" id="register-btn"
+										class="btn btn-success border border-3 border-dark mb-4">
+									<a th:href="@{/unlock/{id}(id=${userData.id})}"
+										class="btn btn-danger border border-3 border-dark mb-4">Clear</a>
+								</div>
+							</div>
+						</div>
+						<div class="container m-3 p-1" th:if="${IsLocked=='N'}">
+							<div class="card m-3 p-1">
+								<div class="container m-3 p-1">
+									<div class="row my-3 align-items-center">
+										<div class="col-3 offset-4">
+											<i class="fa fa-unlock fa-6x" style="color: forestgreen;"
+												aria-hidden="true"></i>
+										</div>
+									</div>
+									<div class="card p-3 m-3">
+										<h3>Account unlocked for the registered mail-id, please proceed with login.</h3>
+										<a href="/" class="btn btn-primary m-3 p-3">Click here to login page</a>
+									</div>
+									<div>
+										
+									</div>
+									
+								</div>
+
+								
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<script type="text/javascript">
+
+		$(document).ready(function () {
+			$('#temppassword-success').hide();
+			$('#confirmpassword-success').hide();
+			submitBtnValidation();
+		});
+
+		const tempPasswordInput = document.getElementById('temppassword');
+		const emailInput = document.getElementById('email');
+		const confirmPasswordInput = document.getElementById('confirmpassword');
+		const newPasswordInput = document.getElementById('newpassword');
+
+		function submitBtnValidation() {
+			if (tempPasswordInput.value.trim() === "" || confirmPasswordInput.value.trim() === "" || newPasswordInput.value.trim() === "") {
+				$('#register-btn').prop('disabled', true).addClass('disabled-button');
+			}
+			else {
+				$('#register-btn').prop('disabled', false).removeClass('disabled-button');
+			}
+			passwordCheck();
+		}
+
+		tempPasswordInput.addEventListener('blur', function () {
+			const tempPassword = tempPasswordInput.value;
+			const email = emailInput.value;
+
+			$.ajax({
+				url: '/validate-temp-password',
+				method: 'GET',
+				data: {tempPassword: tempPassword, email: email},
+				dataType: 'json',
+				success: function (response) {
+					if (response) {
+						console.log('Temporary Password matches');
+						document.getElementById("temppassword-msg").innerHTML = '';
+						$('#temppassword-success').show();
+						$('#register-btn').prop('disabled', false).removeClass('disabled-button');
+						submitBtnValidation();
+					} else {
+						console.log("Temporary Password doesn't matches");
+						$('#temppassword-success').hide();
+						document.getElementById("temppassword-msg").innerHTML = "*Temporary Password doesn't matches";
+						$('#register-btn').prop('disabled', true).addClass('disabled-button');
+						submitBtnValidation();
+					}
+				},
+				error: function () {
+					console.error('Error while validating email');
+				}
+			});
+		});
+
+		function passwordCheck() {
+			var newPassword = document.getElementById("newpassword").value;
+			var confirmPassword = document.getElementById("confirmpassword").value;
+
+			if (newPassword !== confirmPassword && newPassword.length > 0 && confirmPassword.length > 0) {
+				document.getElementById("confirmpassword-msg").textContent = "*Password Mismatch";
+				$('#register-btn').prop('disabled', true).addClass('disabled-button');
+				$('#confirmpassword-success').hide();
+				submitBtnValidation();
+			} else if (newPassword === confirmPassword && newPassword.length > 0 && confirmPassword.length > 0) {
+				document.getElementById("confirmpassword-msg").textContent = "";
+				$('#register-btn').prop('disabled', false).removeClass('disabled-button');
+				$('#confirmpassword-success').show();
+				submitBtnValidation();
+			}
+		}
+
+		newPasswordInput.addEventListener('blur', function () {
+			passwordCheck();
+		});
+
+		confirmPasswordInput.addEventListener('blur', function () {
+			passwordCheck();
+		});
+
+
+		function myFunction1() {
+			var x = document.getElementById("temppassword");
+			if (x.type === "password") {
+				x.type = "text";
+			} else {
+				x.type = "password";
+			}
+		}
+
+		function myFunction2() {
+			var x = document.getElementById("newpassword");
+			if (x.type === "password") {
+				x.type = "text";
+			} else {
+				x.type = "password";
+			}
+		}
+
+		function myFunction3() {
+			var x = document.getElementById("confirmpassword");
+			if (x.type === "password") {
+				x.type = "text";
+			} else {
+				x.type = "password";
+			}
+		}
+
+
+	</script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+		crossorigin="anonymous"></script>
+</body>
+
+</html>
